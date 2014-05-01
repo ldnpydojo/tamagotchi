@@ -70,8 +70,16 @@ class Tamagotchi:
 
     def face(self):
         if self.dead:
-            return '(xvx)'
-        return '(ovo)'
+            return self.add_size('xvx')
+        return self.add_size('ovo')
+
+    def add_size(self,inner_face):
+        return self.sizeness('(', self.fatness) + inner_face +  self.sizeness(')', self.fatness)
+
+    @staticmethod
+    def sizeness(c, size):
+        return c*size
+
 
 def feed(t):
     t.feed()
