@@ -3,19 +3,16 @@ Based on: https://docs.python.org/2/faq/library.html#how-do-i-get-a-single-keypr
 """
 
 import os
-import sys
-import time
-from contextlib import contextmanager
-
-import fcntl
-import termios
-
-import os
 import random
 import string
 import sys
 import time
+from contextlib import contextmanager
 from random import randint
+
+import fcntl
+import termios
+
 
 @contextmanager
 def stdin_setup():
@@ -118,7 +115,7 @@ def tamagotchi(t):
     x = universe_width/2
     direction = 1
     speed = 1
-    snake_width = 1
+    _snake_width = 1
     kgen = getch(0.7)
     key_map = {'f': feed, 'i': inject}
     rand_x = random.randint(0, universe_width-1)
