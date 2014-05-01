@@ -58,8 +58,13 @@ class Tamagotchi:
     def __init__(self):
         self.hunger = randint(2,5)
         self.fatness = 0
-        self.dirty = 0
+        self.health = randint(10, 20)
         self.dead = False
+
+    def age(self):
+        self.health -= randint(1, 4)
+        self.hunger += 1
+
 
     def kill(self):
         self.dead = True
@@ -68,10 +73,17 @@ class Tamagotchi:
         self.hunger -= 1
         self.fatness += 1
 
+    def inject(self):
+        self.health += randint(4, 8)
+
     def face(self):
+        eye = 'o'
+        if self.health < 10:
+            eye = '~'
         if self.dead:
             return self.add_size('xvx')
-        return self.add_size('ovo')
+        face = '{0}v{0}'.format(eye)
+        return self.add_size(face)
 
     def add_size(self,inner_face):
         return self.sizeness('(', self.fatness) + inner_face +  self.sizeness(')', self.fatness)
@@ -83,6 +95,10 @@ class Tamagotchi:
 
 def feed(t):
     t.feed()
+    return t
+
+def inject(t):
+    t.inject()
     return t
 
 def check(t):
@@ -97,7 +113,7 @@ def tamagotchi(t):
     speed = 1
     snake_width = 1
     kgen = getch(0.1)
-    key_map = {'f': feed, 'C': 1}
+    key_map = {'f': feed, 'i': inject}
     rand_x = random.randint(0, universe_width-1)
     food_waiting = False
     i = 0
@@ -109,6 +125,8 @@ def tamagotchi(t):
             action(t)
             check(t)
             i += 1
+
+        t.age()
 
         if x not in range(universe_width):
             print 'Game Over'
