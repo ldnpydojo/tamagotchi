@@ -15,6 +15,7 @@ import random
 import string
 import sys
 import time
+from random import randint
 
 @contextmanager
 def stdin_setup():
@@ -52,33 +53,67 @@ def getch(timeout=0):
 
 
 
+class Tamagotchi:
 
-def tamagotchi():
-    universe_width = 100
+    def __init__(self):
+        self.hunger = randint(2,5)
+        self.fatness = 0
+        self.dirty = 0
+        self.dead = False
+
+    def kill(self):
+        self.dead = True
+
+    def feed(self):
+        self.hunger -= 1
+        self.fatness += 1
+
+    def face(self):
+        if self.dead:
+            return '(xvx)'
+        return '(ovo)'
+
+def feed(t):
+    t.feed()
+    return t
+
+def check(t):
+    if t.fatness > 2:
+        t.kill()
+    return t
+
+def tamagotchi(t):
+    universe_width = 30
     x = universe_width/2
     direction = 1
     speed = 1
     snake_width = 1
     kgen = getch(0.1)
-    key_map = {'D': -1, 'C': 1}
+    key_map = {'f': feed, 'C': 1}
     rand_x = random.randint(0, universe_width-1)
     food_waiting = False
+    i = 0
     while 1:
         c = kgen.next()
-        direction = key_map.get(c, direction)
-        x += direction * speed
-        if x in range(rand_x, rand_x+speed):
-            speed += 1
-            food_waiting = False
+        action = key_map.get(c, None)
+
+        if action:
+            action(t)
+            check(t)
+            i += 1
+
         if x not in range(universe_width):
             print 'Game Over'
             print 'You scored {}!'.format(speed)
             sys.exit()
         os.system('clear')
-        print '\n'*10
-        print ('Score: ' + str(speed)).center(universe_width)
         print
-        print '(oVo)'
+        print ('Score: ' + str(i)).center(universe_width)
+        print
+        print t.face().center(universe_width)
+        if t.dead:
+            print 'GAME OVER!'
+            break
 
 if __name__ == '__main__':
-    tamagotchi()
+    tamagotchi(Tamagotchi())
