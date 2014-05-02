@@ -1,0 +1,69 @@
+#! /usr/bin/env python
+import pygame
+import sys
+import random
+import os
+pygame.init()
+clock = pygame.time.Clock()
+
+size = width, height = 320, 240
+speed = [100, 0]
+black = 0, 0, 0
+red = 255, 0, 0
+
+screen = pygame.display.set_mode(size)
+sprites = os.listdir("sprites")
+
+pygotchi = {path: pygame.image.load('sprites/%s' % path) for path in sprites}
+
+but_eat  = pygame.image.load('sprites/but_eat.png')
+but_rect = but_eat.get_rect().move(10, 200)
+
+states = {
+  'content': [pygotchi[sprite] for sprite in ['normal1.png', 'normal2.png']],
+  'happy': [pygotchi[sprite] for sprite in ['normal3.png']],
+  'sad': [pygotchi[sprite] for sprite in ['sad1.png']],
+  'eat1': [pygotchi['eat1.png']],
+  'eat2': [pygotchi['eat2.png']],
+  'eat3': [pygotchi['eat3.png']],
+}
+
+eating = 0.0
+hunger = 0
+dead = False
+while 1:
+    hunger += 1
+    tick = clock.tick(20) * 0.001
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT: sys.exit()
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_e:
+                eating = 3.0
+                hunger = 0
+            elif event.key == pygame.K_ESCAPE:
+                sys.exit(0)
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            if but_rect.collidepoint(event.pos) and eating <= 0:
+                eating = 3.0
+                hunger = 0
+
+    if eating > 1:
+        eating -= tick
+        current_state = 'eat%d' % (3 - int(eating))
+    elif hunger > 150:
+        current_state = 'sad'
+        if hunger > 250:
+             screen.fill(red)
+             screen.blit(sprite, (150,180))
+             pygame.display.flip()
+             dead = True
+    else:
+        current_state = 'content'
+
+    if not dead:
+        sprite = random.choice(states[current_state])
+
+        screen.fill(black)
+        screen.blit(sprite, (150, 100))
+        screen.blit(but_eat, but_rect)
+        pygame.display.flip()
